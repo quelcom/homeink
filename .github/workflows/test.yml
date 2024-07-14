@@ -1,0 +1,38 @@
+name: Linters and Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+# This ensures that previous jobs for the PR are canceled when the PR is
+# updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Lint and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          check-latest: true
+      - name: Setup golangci-lint
+        uses: golangci/golangci-lint-action@v6
+      - name: Run golangci-lint
+        run: make lint
+      - name: Run tests
+        run: make test

@@ -1,0 +1,5 @@
+Port = ":3000"
+
+KindleIP = "192.168.2.2"
+KindlePassword = ""
+PathToFBInk = "/mnt/us/developer/fbink"

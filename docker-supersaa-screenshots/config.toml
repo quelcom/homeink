@@ -1,0 +1,21 @@
+WebsiteUrl = "https://www.is.fi/supersaa/suomi/oulu/643492/"
+ScreenshotDir = "/tmp/screenshot/"
+ScreenshotInterval = "5m"
+RemoteURL = "http://pizeroip:3000/api/v1/screenshot"
+
+
+[[SupersaaScreenshot]]
+Filename = "supersaa-hourly.png"
+Selection = "//h2[contains(text(), 'Tuntikohtainen ennuste')]/ancestor::table"
+Actions = [
+	# Remove show more
+	"let showMore = Array.from(document.querySelectorAll('span')).find(el => el.textContent === 'NÄYTÄ LISÄÄ').closest('button'); if (showMore) showMore.remove()"
+]
+
+[[SupersaaScreenshot]]
+Filename = "supersaa-weekly.png"
+Selection = "//h2[contains(text(), 'Viikon sääennuste')]/ancestor::table"
+Actions = [
+	# Remove dropdown arrow to expand hourly foreacast for the day
+	"let dropArrow = document.querySelectorAll('button.show-more-button-text'); dropArrow.forEach(function(el) { el.remove(); })"
+]

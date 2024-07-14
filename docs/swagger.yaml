@@ -1,0 +1,74 @@
+definitions:
+  server.WaterPayload:
+    properties:
+      liters:
+        example: 42
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/screenshot:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - collectionFormat: csv
+        description: Image to upload
+        in: formData
+        items:
+          type: file
+        name: image
+        required: true
+        type: array
+      - description: Filename
+        in: formData
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: This API can be used as health check for this application.
+      tags:
+      - Homeink
+  /api/v1/water:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Water in liters
+        in: body
+        name: liters
+        required: true
+        schema:
+          $ref: '#/definitions/server.WaterPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Updates water meter in liters
+      tags:
+      - Homeink
+swagger: "2.0"

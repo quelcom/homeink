@@ -77,7 +77,7 @@ Chromedp and the Go application are bundled into a single docker image, and the 
 
 Not exactly an application, but listing here for documenting purposes. At home I monitor our water consumption with a great ESPHome device from [smart-stuff.nl](https://smart-stuff.nl/product/esphome-waterlezer-dongle/). I am not extremely interested in tracking the liters or cost, but with two young kids I wanted to have Home Assistant automations that would warn me if the water consumption goes above some thresholds based on our common water usage patterns (more than 30 liters in the last 15 minutes, more than 60 liters in the last hour, etc).
 
-In Home Assistant, I use the [RESTFul Command](https://www.home-assistant.io/integrations/rest_command/) integration and created two services in `configuraiton.yaml`, one for the Pi Zero device and another for my local computer for testing:
+In Home Assistant, I use the [RESTFul Command](https://www.home-assistant.io/integrations/rest_command/) integration and created two services in `configuration.yaml`, one for the Pi Zero device and another for my local computer for testing:
 
 ```yaml
 [core-ssh ~]$ cat homeassistant/configuration.yaml
@@ -97,7 +97,7 @@ rest_command:
     payload: '{"liters": {{ liters_placeholder }}}'
 ```
 
-Then I added a new automation that calls teh /api/v1/water endpoint from `Homeink` every five minutes:
+Then I added a new automation that calls the `/api/v1/water` endpoint from `Homeink` every five minutes:
 
 ```yaml
 [core-ssh ~]$ cat homeassistant/automations/water_report_kindle.yaml
@@ -111,3 +111,9 @@ Then I added a new automation that calls teh /api/v1/water endpoint from `Homein
         liters_placeholder: >-
           {{ states('sensor.watermeter_daily')|int }}
 ```
+
+## Future
+
+Besides monitoring/visualizing the `Homeink` endpoint calls in my local [Grafana](https://grafana.com/oss/grafana/), there is screen space still available in bottom-right which I am planning to use it for more Home Assistant stuff: doors being opened, showing the temperature of different rooms, etc.
+
+Considering how invested I am with Home Assistant already, another possibility is to crreate 16-bit grayscale screenshots of a custom dashboard, and render it every minute.

@@ -1,6 +1,8 @@
 # Homeink
 
-Transforming my old Kindle DX into a smart(ish) e-ink clock.
+Transforming my old Kindle DX into a smart(ish) e-ink clock 🕙
+
+<img alt="Homeink v1" src="assets/homeink_1.jpeg" width="50%" height="50%">
 
 ## Intro
 
@@ -32,7 +34,21 @@ I also adjusted the cpu governor to powersave and few tweaks here and there, but
 
 ### Frame
 
-I bought a 3d picture frame that was big enough to hold the kindle and I handcrafted a passepartout with thick cardstock paper to hide the Kindle frame and keyboard. I secured the Pi Zero with some kapton tape, drilled some holes in the back for ventilation and added a bit of foam to make sure the Kindle does not move inside the frame.
+I bought a 3d picture frame that was big enough to hold the kindle and handcrafted a passepartout with thick cardstock paper to hide the Kindle frame and keyboard. I secured the Pi Zero with kapton tape, drilled some holes in the back for ventilation and added a bit of foam to make sure the Kindle does not move inside the frame.
+
+<table>
+  <tr>
+    <td align="center" valign="middle">
+      <p>Inside the frame</p>
+      <img alt="Homeink inside" src="assets/homeink_2.jpeg" width="50%" height="50%" align="center">
+    </td>
+    <td align="center" valign="middle">
+      <p>Back cover</p>
+      <img alt="Homeink back cover" src="assets/homeink_3.jpeg" width="50%" height="50%">
+    </td>
+  </tr>
+</table>
+
 
 ## Software
 
@@ -42,7 +58,7 @@ The main software is called `Homeink` and is a Go application that gets installe
 
 - It provides a small wrapper to the FBInk tool, and it runs `fbink` commands over SSH thanks to the [goph](https://github.com/melbahja/goph) library.
 - It is also a small HTTP server that currently exposes two endpoints available in the local network. At the moment there are two endpoints:
-  - `/api/v1/screenshot` that accepts an image to be rendered in the display. Used to render weather forecasts from [Supersää](https://supersaa.fi).
+  - `/api/v1/screenshot` that accepts an image to be rendered in the display. Used to render local weather forecasts from [Supersää](https://supersaa.fi).
   - `/api/v1/water`, that is used to show the daily water consumption in our home.
 
 The HTTP server also exposes a Swagger UI under `/swagger/index.html`, which is useful to test the endpoints, especially the screenshot endpoint because it is a multipart request.

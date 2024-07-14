@@ -53,3 +53,41 @@ Code is under the `docker-supersaa-screenshots` directory. It is a separated Go 
 
 Chromedp and the Go application are bundled into a single docker image, and the container runs on my home server within my home network. My main motivation was to reduce as much as possible the processing work required by the Pi Zero.
 
+### Water usage
+
+Not exactly an application, but listing here for documenting purposes. At home I monitor our water consumption with a great ESPHome device from [smart-stuff.nl](https://smart-stuff.nl/product/esphome-waterlezer-dongle/). I am not extremely interested in tracking the liters or cost, but with two young kids I wanted to have Home Assistant automations that would warn me if the water consumption goes above some thresholds based on our common water usage patterns (more than 30 liters in the last 15 minutes, more than 60 liters in the last hour, etc).
+
+In Home Assistant, I use the [RESTFul Command](https://www.home-assistant.io/integrations/rest_command/) integration and created two services in `configuraiton.yaml`, one for the Pi Zero device and another for my local computer for testing:
+
+```yaml
+[core-ssh ~]$ cat homeassistant/configuration.yaml
+...
+rest_command:
+  liters_request_dev:
+    url: http://dietpi.lan:3000/api/v1/water
+    method: POST
+    headers:
+      accept: "application/json"
+    payload: '{"liters": {{ liters_placeholder }}}'
+  liters_request:
+    url: http://mbm3pro.lan:3000/api/v1/water
+    method: POST
+    headers:
+      accept: "application/json"
+    payload: '{"liters": {{ liters_placeholder }}}'
+```
+
+Then I created a new automation that updates the water consumption to the e-ink display every five minutes:
+
+```yaml
+[core-ssh ~]$ cat homeassistant/automations/water_report_kindle.yaml
+- alias: Water report to kindle
+  trigger:
+      - platform: time_pattern
+        minutes: "/5"
+  action:
+    - service: rest_command.liters_request
+      data:
+        liters_placeholder: >-
+          {{ states('sensor.watermeter_daily')|int }}
+```

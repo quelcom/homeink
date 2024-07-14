@@ -29,3 +29,16 @@ netmask 255.255.255.0
 ```
 
 I also adjusted the cpu governor to powersave and few tweaks here and there, but nothing important other than adding the new network interface.
+
+## Software
+
+### Homeink
+
+The main software is called `Homeink` and is a Go application that gets installed in the Pi Zero device. In a nutshell:
+
+- It provides a small wrapper to the FBInk tool, and it runs `fbink` commands over SSH thanks to the [goph](https://github.com/melbahja/goph) library.
+- It is also a small HTTP server that currently exposes two endpoints available in the local network. At the moment there are two endpoints:
+  - `/api/v1/screenshot` that accepts an image to be rendered in the display. Used to render weather forecasts from [Supersää](https://supersaa.fi).
+  - `/api/v1/water`, that is used to show the daily water consumption in our home.
+
+The HTTP server also exposes a Swagger UI under `/swagger/index.html`, which is useful to test the endpoints, especially the screenshot endpoint because it is a multipart request.

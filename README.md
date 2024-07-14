@@ -30,6 +30,10 @@ netmask 255.255.255.0
 
 I also adjusted the cpu governor to powersave and few tweaks here and there, but nothing important other than adding the new network interface.
 
+### Frame
+
+I bought a 3d picture frame that was big enough to hold the kindle and I handcrafted a passepartout with thick cardstock paper to hide the Kindle frame and keyboard. I secured the Pi Zero with some kapton tape, drilled some holes in the back for ventilation and added a bit of foam to make sure the Kindle does not move inside the frame.
+
 ## Software
 
 ### Homeink
@@ -77,7 +81,7 @@ rest_command:
     payload: '{"liters": {{ liters_placeholder }}}'
 ```
 
-Then I created a new automation that updates the water consumption to the e-ink display every five minutes:
+Then I added a new automation that calls teh /api/v1/water endpoint from `Homeink` every five minutes:
 
 ```yaml
 [core-ssh ~]$ cat homeassistant/automations/water_report_kindle.yaml

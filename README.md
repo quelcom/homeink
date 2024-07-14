@@ -18,7 +18,7 @@ I also installed [FBInk](https://github.com/NiLuJe/FBInk) to control the e-ink d
 
 ### Pi Zero
 
-I installed DietPi because I had an unused 2 GB card unused and I didn't want to buy a new one. I roll with the defaults, but I added a new network interface in order to being able to SSH to the Kindle over [RNDIS](https://en.wikipedia.org/wiki/RNDIS):
+I installed DietPi because I had an unused 2 GB micro SD card unused and I didn't want to buy a new one. I roll with the defaults, but I added a new network interface in order to being able to SSH to the Kindle over [RNDIS](https://en.wikipedia.org/wiki/RNDIS):
 
 ```
 dietpi@DietPi:~$ cat /etc/network/interfaces.d/usb0
@@ -42,3 +42,14 @@ The main software is called `Homeink` and is a Go application that gets installe
   - `/api/v1/water`, that is used to show the daily water consumption in our home.
 
 The HTTP server also exposes a Swagger UI under `/swagger/index.html`, which is useful to test the endpoints, especially the screenshot endpoint because it is a multipart request.
+
+Oh, and of course it shows the current time! 😅
+
+Also it shows the cpu temperature of the Pi Zero, which is something I want to keep an eye as the Zero is confined in a tight place. In the future, I might end up using Telegram bot notifications instead.
+
+### Supersää screenshots
+
+Code is under the `docker-supersaa-screenshots` directory. It is a separated Go application, but it lives in the same repository for simplicity. The application uses [chromedp](https://github.com/chromedp/chromedp) to periodically take screenshots of specific components of Supersää, it converts the screenshots to 16-bit grayscale (which is what the Kindle DX display can handle) and calls the `/api/v1/screenshot` from `Homeink`. There is a very rudimentary caching in place, so I do not need to send and re-render the same images over and over again, albeit the hourly forecast are updated several times per hour.
+
+Chromedp and the Go application are bundled into a single docker image, and the container runs on my home server within my home network. My main motivation was to reduce as much as possible the processing work required by the Pi Zero.
+

@@ -6,9 +6,9 @@ Transforming my old Kindle DX into a smart(ish) e-ink clock 🕙
 
 ## Intro
 
-Back in 2010 I bought an Amazon Kindle DX, thinking that the large screen would be ideal for reading technical books in PDF format. Even though reading such books was *doable* overall, it required few compromises. In some cases, PDF books required a bit of preprocessing in order to crop empty margins. Despite that, PDFs with condensed charts or images were still difficult to interpret, and the zooming and navigation capabilities of the device were a bit underwhelming, especially with heavy files. In the end, I used the Kindle DX for reading mostly sci-fi books, and that was perfect especially when I learned how to hack the device and install [KOReader](https://github.com/koreader/koreader). That lasted for years until the battery started to give up due to its age. In 2021 I bought a Kobo Libra 2 and the Kindle went right into a drawer. I refused the idea of consiering the Kindle e-waste and that I should just get rid of it, so it went to a drawer waiting for a new opportunity.
+Back in 2010 I bought an Amazon Kindle DX, thinking that the large screen would be ideal for reading technical books in PDF format. Even though reading such books was *doable* overall, it required few compromises. In some cases, PDF books required a bit of preprocessing in order to crop empty margins. Despite that, PDFs with condensed charts or images were still difficult to interpret, and the zooming and navigation capabilities of the device were a bit underwhelming, especially with heavy files. In the end, I used the Kindle DX for reading mostly sci-fi books, and for that it was perfect. Especially when I learned how to hack the device and install [KOReader](https://github.com/koreader/koreader). That lasted for years until the battery started to give up due to its age. In 2021 I bought a Kobo Libra 2 and the Kindle went right into a drawer. I refused the idea of considering the Kindle e-waste and that I should just get rid of it, so it went to a drawer waiting for a new opportunity.
 
-And the opportunity came: I was looking to buy a large (around 10" or 12") display in order to display a Home Assistant dashboard and I suddenly remembered I still had my old Kindle. The major blocker is that the Kindle DX does not have any ethernet or wi-fi connecitivy (only networking available is the built-in 3G radio for Amazon Whispernet, which has been defunct for years). On the other hand, a Raspberry Pi Zero 2 W has all the networking I need and is tiny. Considering I already hacked the Kindle back in the days, I started to explore the idea of coupling them and see if I could control the Kindle display from the Pi Zero.
+And the opportunity came: I was looking to buy a large (around 10" or 12") display in order to display a Home Assistant dashboard and I suddenly remembered I still had my old Kindle. The major blocker is that the Kindle DX does not have any ethernet or wi-fi connectivity (only networking available is the built-in 3G radio for Amazon Whispernet, which has been defunct for years). On the other hand, a Raspberry Pi Zero 2 W has all the networking I need and is tiny. Considering I already hacked the Kindle back in the days, I started to explore the idea of coupling them and see if I could control the Kindle display from the Pi Zero.
 
 ## Preparations
 
@@ -20,7 +20,7 @@ I also installed [FBInk](https://github.com/NiLuJe/FBInk) to control the e-ink d
 
 ### Pi Zero
 
-I installed DietPi because I had an unused 2 GB micro SD card unused and I didn't want to buy a new one. I roll with the defaults, but I added a new network interface in order to being able to SSH to the Kindle over [RNDIS](https://en.wikipedia.org/wiki/RNDIS):
+I installed DietPi because I had an unused 2 GB micro SD card and I didn't want to buy a new one. I roll with the defaults, but I added a new network interface in order to being able to SSH to the Kindle over [RNDIS](https://en.wikipedia.org/wiki/RNDIS):
 
 ```
 dietpi@DietPi:~$ cat /etc/network/interfaces.d/usb0
@@ -75,7 +75,7 @@ Chromedp and the Go application are bundled into a single docker image, and the 
 
 ### Water usage
 
-Not exactly an application, but listing here for documenting purposes. At home I monitor our water consumption with a great ESPHome device from [smart-stuff.nl](https://smart-stuff.nl/product/esphome-waterlezer-dongle/). I am not extremely interested in tracking the liters or cost, but with two young kids I wanted to have Home Assistant automations that would warn me if the water consumption goes above some thresholds based on our common water usage patterns (more than 30 liters in the last 15 minutes, more than 60 liters in the last hour, etc).
+Not exactly an application, but listing here for documenting purposes. At home I monitor our water consumption with a great ESPHome device from [smart-stuff.nl](https://smart-stuff.nl/product/esphome-waterlezer-dongle/). I am not extremely interested in tracking the liters or cost, but with two young kids I wanted to have Home Assistant automations that would warn me if the water consumption goes above some thresholds based on our usual water usage patterns (more than 30 liters in the last 15 minutes, more than 60 liters in the last hour, etc).
 
 In Home Assistant, I use the [RESTFul Command](https://www.home-assistant.io/integrations/rest_command/) integration and created two services in `configuration.yaml`, one for the Pi Zero device and another for my local computer for testing:
 
@@ -97,14 +97,17 @@ rest_command:
     payload: '{"liters": {{ liters_placeholder }}}'
 ```
 
-Then I added a new automation that calls the `/api/v1/water` endpoint from `Homeink` every five minutes:
+Then I added a new automation that is triggered every two minutes, but it only calls the `/api/v1/water` endpoint if the water sensor has been recently updated:
 
 ```yaml
-[core-ssh ~]$ cat homeassistant/automations/water_report_kindle.yaml
+[core-ssh automations]$ cat water_report_kindle.yaml
 - alias: Water report to kindle
   trigger:
       - platform: time_pattern
-        minutes: "/5"
+        minutes: "/2"
+  condition:
+    - condition: template
+      value_template: '{{ as_timestamp(now()) - as_timestamp(states.sensor.watermeter_daily.last_updated) < 150 }}'
   action:
     - service: rest_command.liters_request
       data:

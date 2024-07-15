@@ -35,6 +35,6 @@ func GetPiTemp() (string, bool) {
 		lastTemp = currentTemp
 	}
 
-	slog.Info(fmt.Sprintf("GetPiTemp: current temp %s", currentTemp))
+	slog.Debug(fmt.Sprintf("GetPiTemp: current temp %s", currentTemp))
 	return currentTemp, changed
 }

@@ -56,7 +56,7 @@ func kindleClock() {
 				slog.Error(err.Error())
 			}
 		} else {
-			slog.Info("Skip fbink print temp")
+			slog.Debug("Skip fbink print temp")
 		}
 
 		secondsUntilMinuteChange := 60 - n.Second()
